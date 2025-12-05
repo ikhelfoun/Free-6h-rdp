@@ -1,1 +1,21 @@
-# Free-6h-rdp
+name: RDP
+
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Download ngrok
+        run: |
+          Invoke-WebRequest https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
+          Expand-Archive ngrok.zip
+          ./ngrok.exe authtoken 2f5kLl9ReaOv7Sx6oYEgkHu546c_6ehH6nN9qYr9DzrHaZyQj
+
+      - name: Enable RDP
+        run: |
+          net user kamel123 MyStrong123 /add
+          net localgroup administrators kamel123 /add
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name 'fDenyTSConnections' -Value 0
+          Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+          ./ngrok.exe tcp 3389
